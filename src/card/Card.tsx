@@ -1,11 +1,15 @@
-export default function Card(props: { suit: string; rank: string }) {
-  const { suit, rank } = props;
+import React from "react";
+import CardInfo from "./CardInfo";
 
-  const imgUrl = "/images/cards/" + rank + "-" + suit + ".png";
+export default function Card({ cardInfo }: { cardInfo: CardInfo }) {
+  const imgUrl =
+    "/images/cards/" +
+    (cardInfo.hidden ? "BACK" : cardInfo.rank + "-" + cardInfo.suit) +
+    ".png";
 
   return (
-    <div>
-      <img src={imgUrl} />
-    </div>
+    <React.Fragment>
+      <img style={{ height: "200px" }} src={imgUrl} />
+    </React.Fragment>
   );
 }
