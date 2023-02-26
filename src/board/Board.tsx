@@ -1,9 +1,15 @@
-import Card from "../card/Card";
 import CardInfo from "../card/CardInfo";
 import React, { useEffect, useState } from "react";
 import Dealer from "../game/Dealer";
 import BoardInfo from "../game/BoardInfo";
 import Player from "../game/Player";
+import { Typography } from "@mui/material";
+import { Suit } from "../card/Suit";
+import { Rank } from "../card/Rank";
+import BasicStrategy from "../strategy/BasicStrategy";
+import { HandInfo } from "../card/HandInfo";
+import { BasicStrategyAction } from "../strategy/BasicStrategyAction";
+import Score from "../score/Score";
 
 export default function Board() {
   const [boardInfo, setBoardInfo] = useState<BoardInfo>({
@@ -13,7 +19,20 @@ export default function Board() {
     player: [],
   });
 
-  function addPlayerCards(numOfCards: number) {
+  const [messageText, setMessageText] = useState<string>("");
+
+  useEffect(() => {
+    resetBoard();
+  }, []);
+
+  function playerDraw(numOfCards: number) {
+    const playerInfo = HandInfo.newInstance([...boardInfo.player]);
+    let result = BasicStrategy.get(playerInfo, boardInfo.dealer[0]);
+    setMessageText(result === BasicStrategyAction.DRAW ? "Correct!" : "Wrong!");
+    if (result === BasicStrategyAction.STAND) {
+      return;
+    }
+
     setBoardInfo((prevState) => {
       return {
         ...prevState,
@@ -33,7 +52,15 @@ export default function Board() {
     });
   }
 
-  useEffect(() => {
+  function playerStand() {
+    const playerInfo = HandInfo.newInstance([...boardInfo.player]);
+    let result = BasicStrategy.get(playerInfo, boardInfo.dealer[0]);
+    setMessageText(
+      result === BasicStrategyAction.STAND ? "Correct!" : "Wrong!"
+    );
+  }
+
+  function resetBoard() {
     const cards = initDecks(1);
 
     const playerCards = [...cards.slice(-2)];
@@ -47,32 +74,24 @@ export default function Board() {
       dealer: dealerCards,
       player: playerCards,
     });
-  }, []);
+
+    setMessageText("");
+  }
 
   return (
     <React.Fragment>
       <Dealer cards={boardInfo.dealer} addCards={addDealerCards} />
-      <Player cards={boardInfo.player} addCards={addPlayerCards} />
+      <Player
+        cards={boardInfo.player}
+        playerDraw={playerDraw}
+        playerStand={playerStand}
+        resetBoard={resetBoard}
+      />
+      <Typography variant="h6">{messageText}</Typography>
+      <Score />
     </React.Fragment>
   );
 }
-
-const suits: string[] = ["C", "D", "H", "S"];
-const ranks: string[] = [
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "J",
-  "Q",
-  "K",
-  "A",
-];
 
 function initDecks(numOfDeck: number): CardInfo[] {
   let result: CardInfo[] = [];
@@ -83,8 +102,8 @@ function initDecks(numOfDeck: number): CardInfo[] {
 }
 
 function initSingleDeck(): CardInfo[] {
-  return suits.flatMap((suit) =>
-    ranks.map((rank) => ({ suit, rank, hidden: false }))
+  return Object.values(Suit).flatMap((suit) =>
+    Object.values(Rank).map((rank) => ({ suit, rank, hidden: false }))
   );
 }
 

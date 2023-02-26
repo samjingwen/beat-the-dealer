@@ -1,5 +1,8 @@
+import {Suit} from "./Suit";
+import {Rank} from "./Rank";
+
 export default interface CardInfo {
-    suit: string
-    rank: string
+    suit: Suit
+    rank: Rank
     hidden: boolean
 }

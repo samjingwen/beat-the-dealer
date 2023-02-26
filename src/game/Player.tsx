@@ -5,15 +5,15 @@ import CardInfo from "../card/CardInfo";
 
 export default function Player({
   cards,
-  addCards,
+  playerDraw,
+  playerStand,
+  resetBoard,
 }: {
   cards: CardInfo[];
-  addCards: (numOfCards: number) => void;
+  playerDraw: (numOfCards: number) => void;
+  playerStand: () => void;
+  resetBoard: () => void;
 }) {
-  function handleDrawBtnClick(numOfCards: number) {
-    addCards(numOfCards);
-  }
-
   return (
     <Box component="div">
       <Grid container sx={{ width: "100%" }}>
@@ -21,8 +21,14 @@ export default function Player({
           <CardList cards={cards} />
         </Grid>
         <Grid>
-          <Button variant="outlined" onClick={() => handleDrawBtnClick(1)}>
+          <Button variant="outlined" onClick={() => playerDraw(1)}>
             Draw
+          </Button>
+          <Button variant="outlined" onClick={() => playerStand()}>
+            Stand
+          </Button>
+          <Button variant="outlined" onClick={() => resetBoard()}>
+            Reset
           </Button>
         </Grid>
       </Grid>
