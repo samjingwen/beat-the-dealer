@@ -10,13 +10,16 @@ import BasicStrategy from "../strategy/BasicStrategy";
 import { HandInfo } from "../card/HandInfo";
 import { BasicStrategyAction } from "../strategy/BasicStrategyAction";
 import Score from "../score/Score";
+import { ShoeInfo } from "../card/ShoeInfo";
+import { DealerHandInfo } from "../card/DealerHandInfo";
+import { PlayerHandInfo } from "../card/PlayerHandInfo";
 
 export default function Board() {
   const [boardInfo, setBoardInfo] = useState<BoardInfo>({
     numOfDeck: 0,
-    shoe: [],
-    dealer: [],
-    player: [],
+    shoe: new ShoeInfo([]),
+    dealerHand: new DealerHandInfo([]),
+    playerHands: [] as PlayerHandInfo[],
   });
 
   const [messageText, setMessageText] = useState<string>("");
@@ -25,9 +28,16 @@ export default function Board() {
     resetBoard();
   }, []);
 
-  function playerDraw(numOfCards: number) {
-    const playerInfo = HandInfo.newInstance([...boardInfo.player]);
-    let result = BasicStrategy.get(playerInfo, boardInfo.dealer[0]);
+  function dealerDraw() {}
+
+  function playerDraw(id: number, numOfCards: number) {
+    let cardInfos = boardInfo.shoe.deal(numOfCards);
+    boardInfo.playerHands[id].draw(cardInfos);
+
+    let result = BasicStrategy.get(
+      boardInfo.playerHands[id],
+      boardInfo.dealerHand.upCard
+    );
     setMessageText(result === BasicStrategyAction.DRAW ? "Correct!" : "Wrong!");
     if (result === BasicStrategyAction.STAND) {
       return;
@@ -36,43 +46,38 @@ export default function Board() {
     setBoardInfo((prevState) => {
       return {
         ...prevState,
-        shoe: [...prevState.shoe.slice(0, -numOfCards)],
-        player: [...prevState.player, ...prevState.shoe.slice(-numOfCards)],
+        shoe: boardInfo.shoe,
+        playerHands: boardInfo.playerHands,
       };
     });
   }
 
-  function addDealerCards(numOfCards: number) {
-    setBoardInfo((prevState) => {
-      return {
-        ...prevState,
-        shoe: [...prevState.shoe.slice(0, -numOfCards)],
-        dealer: [...prevState.dealer, ...prevState.shoe.slice(-numOfCards)],
-      };
-    });
-  }
-
-  function playerStand() {
-    const playerInfo = HandInfo.newInstance([...boardInfo.player]);
-    let result = BasicStrategy.get(playerInfo, boardInfo.dealer[0]);
+  function playerStand(id: number) {
+    let result = BasicStrategy.get(
+      boardInfo.playerHands[id],
+      boardInfo.dealerHand.upCard
+    );
     setMessageText(
       result === BasicStrategyAction.STAND ? "Correct!" : "Wrong!"
     );
   }
 
+  function playerDouble() {}
+
+  function playerSplit() {}
+
   function resetBoard() {
     const cards = initDecks(1);
 
-    const playerCards = [...cards.slice(-2)];
-    const dealerCards = [...cards.slice(-4, -2)];
-    dealerCards[1].hidden = true;
-    const shoe = [...cards.slice(0, -4)];
+    const playerHand = new PlayerHandInfo([...cards.slice(-2)]);
+    const dealerHand = new DealerHandInfo([...cards.slice(-4, -2)]);
+    const shoe = new ShoeInfo([...cards.slice(0, -4)]);
 
     setBoardInfo({
       numOfDeck: 1,
       shoe: shoe,
-      dealer: dealerCards,
-      player: playerCards,
+      dealerHand: dealerHand,
+      playerHands: [playerHand],
     });
 
     setMessageText("");
@@ -80,13 +85,20 @@ export default function Board() {
 
   return (
     <React.Fragment>
-      <Dealer cards={boardInfo.dealer} addCards={addDealerCards} />
-      <Player
-        cards={boardInfo.player}
-        playerDraw={playerDraw}
-        playerStand={playerStand}
-        resetBoard={resetBoard}
-      />
+      <Dealer hand={boardInfo.dealerHand} dealerDraw={dealerDraw} />
+      {boardInfo.playerHands.map((hand, index) => (
+        <Player
+          key={index}
+          hand={hand}
+          playerId={index}
+          playerDraw={playerDraw}
+          playerStand={playerStand}
+          playerDouble={playerDouble}
+          playerSplit={playerSplit}
+          resetBoard={resetBoard}
+        />
+      ))}
+
       <Typography variant="h6">{messageText}</Typography>
       <Score />
     </React.Fragment>

@@ -1,31 +1,46 @@
 import { Box, Button, Grid } from "@mui/material";
 import CardList from "../card/CardList";
 import React from "react";
-import CardInfo from "../card/CardInfo";
+import { PlayerHandInfo } from "../card/PlayerHandInfo";
 
 export default function Player({
-  cards,
+  hand,
+  playerId,
   playerDraw,
   playerStand,
+  playerDouble,
+  playerSplit,
   resetBoard,
 }: {
-  cards: CardInfo[];
-  playerDraw: (numOfCards: number) => void;
-  playerStand: () => void;
+  hand: PlayerHandInfo;
+  playerId: number;
+  playerDraw: (id: number, numOfCards: number) => void;
+  playerStand: (id: number) => void;
+  playerDouble: () => void;
+  playerSplit: () => void;
   resetBoard: () => void;
 }) {
   return (
-    <Box component="div">
+    <Box component="div" sx={{ p: 2, border: "1px dashed grey" }}>
       <Grid container sx={{ width: "100%" }}>
         <Grid item xs={12} sx={{ height: "200px" }}>
-          <CardList cards={cards} />
+          <CardList cards={hand.cards} />
         </Grid>
         <Grid>
-          <Button variant="outlined" onClick={() => playerDraw(1)}>
+          <Button
+            variant="outlined"
+            onClick={(event) => playerDraw(playerId, 1)}
+          >
             Draw
           </Button>
-          <Button variant="outlined" onClick={() => playerStand()}>
+          <Button variant="outlined" onClick={() => playerStand(playerId)}>
             Stand
+          </Button>
+          <Button variant="outlined" onClick={() => playerDouble()}>
+            Double
+          </Button>
+          <Button variant="outlined" onClick={() => playerSplit()}>
+            Split
           </Button>
           <Button variant="outlined" onClick={() => resetBoard()}>
             Reset

@@ -3,23 +3,20 @@ import React, { useEffect, useState } from "react";
 import CardInfo from "../card/CardInfo";
 import { Box, Button, Grid } from "@mui/material";
 import CardList from "../card/CardList";
+import { DealerHandInfo } from "../card/DealerHandInfo";
 
 export default function Dealer({
-  cards,
-  addCards,
+  hand,
+  dealerDraw,
 }: {
-  cards: CardInfo[];
-  addCards: (numOfCards: number) => void;
+  hand: DealerHandInfo;
+  dealerDraw: (numOfCards: number) => void;
 }) {
-  function handleDrawBtnClick(numOfCards: number) {
-    addCards(numOfCards);
-  }
-
   return (
-    <Box component="div">
+    <Box component="div" sx={{ p: 2, border: "1px dashed grey" }}>
       <Grid container sx={{ width: "100%" }}>
         <Grid item xs={12} sx={{ height: "200px" }}>
-          <CardList cards={cards} />
+          <CardList cards={hand.cards} />
         </Grid>
       </Grid>
     </Box>

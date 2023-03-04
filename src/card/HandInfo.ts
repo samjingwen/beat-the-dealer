@@ -4,30 +4,45 @@ import { Rank } from "./Rank";
 import { CardValue } from "./CardValue";
 
 export class HandInfo {
-  readonly cards: CardInfo[];
-  readonly value: number;
-  readonly type: HandType;
+  private readonly _cards: CardInfo[];
 
-  static newInstance(cards: CardInfo[]) {
+  constructor(cards: CardInfo[]) {
+    this._cards = cards;
+  }
+
+  public get cards(): CardInfo[] {
+    return this._cards;
+  }
+
+  public get value(): number {
     let result = 0;
     let aces = 0;
-    let type = HandType.HARD;
-    cards.forEach((card) => {
-      result += this.values[card.rank];
+    this._cards.forEach((card) => {
+      result += HandInfo.values[card.rank];
       aces += card.rank === Rank.ACE ? 1 : 0;
     });
     while (result <= 11 && aces > 0) {
       result += 10;
       aces--;
-      type = HandType.SOFT;
     }
-    return new HandInfo(cards, result, type);
+    return result;
   }
 
-  constructor(cards: CardInfo[], value: number, type: HandType) {
-    this.cards = cards;
-    this.value = value;
-    this.type = type;
+  get type(): HandType {
+    let result = 0;
+    let aces = 0;
+    this._cards.forEach((card) => {
+      result += HandInfo.values[card.rank];
+      aces += card.rank === Rank.ACE ? 1 : 0;
+    });
+    if (result <= 11 && aces > 0) {
+      return HandType.SOFT;
+    }
+    return HandType.HARD;
+  }
+
+  public draw(cards: CardInfo[]) {
+    this._cards.push(...cards);
   }
 
   private static values: Record<Rank, CardValue> = {
