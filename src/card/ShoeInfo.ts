@@ -1,5 +1,4 @@
 import CardInfo from "./CardInfo";
-import { CardValue } from "./CardValue";
 
 export class ShoeInfo {
   private _cards: CardInfo[];

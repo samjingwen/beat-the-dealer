@@ -1,14 +1,14 @@
-import { Grid } from "@mui/material";
 import Card from "./Card";
 import React from "react";
 import CardInfo from "./CardInfo";
+import { Box } from "@mui/material";
 
 export default function CardList({ cards }: { cards: CardInfo[] }) {
   return (
-    <React.Fragment>
+    <Box>
       {cards.map((card) => (
         <Card key={card.suit + "_" + card.rank} cardInfo={card}></Card>
       ))}
-    </React.Fragment>
+    </Box>
   );
 }

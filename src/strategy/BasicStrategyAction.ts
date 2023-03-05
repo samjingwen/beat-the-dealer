@@ -1,6 +1,6 @@
 export enum BasicStrategyAction {
-    DRAW,
-    STAND,
-    DOUBLE,
-    SPLIT
+    DRAW = "Draw",
+    STAND = "Stand",
+    DOUBLE = "Double",
+    SPLIT = "Split"
 }

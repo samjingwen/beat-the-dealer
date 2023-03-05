@@ -16,12 +16,15 @@ export default function Player({
   playerId: number;
   playerDraw: (id: number, numOfCards: number) => void;
   playerStand: (id: number) => void;
-  playerDouble: () => void;
-  playerSplit: () => void;
+  playerDouble: (id: number) => void;
+  playerSplit: (id: number) => void;
   resetBoard: () => void;
 }) {
   return (
-    <Box component="div" sx={{ p: 2, border: "1px dashed grey" }}>
+    <Box
+      component="div"
+      sx={{ p: 2, border: "1px dashed grey", width: "600px", margin: "auto" }}
+    >
       <Grid container sx={{ width: "100%" }}>
         <Grid item xs={12} sx={{ height: "200px" }}>
           <CardList cards={hand.cards} />
@@ -36,10 +39,14 @@ export default function Player({
           <Button variant="outlined" onClick={() => playerStand(playerId)}>
             Stand
           </Button>
-          <Button variant="outlined" onClick={() => playerDouble()}>
+          <Button variant="outlined" onClick={() => playerDouble(playerId)}>
             Double
           </Button>
-          <Button variant="outlined" onClick={() => playerSplit()}>
+          <Button
+            variant="outlined"
+            onClick={() => playerSplit(playerId)}
+            disabled={!hand.canSplit()}
+          >
             Split
           </Button>
           <Button variant="outlined" onClick={() => resetBoard()}>

@@ -1,15 +1,60 @@
-import { HandInfo } from "../card/HandInfo";
 import { HandType } from "../card/HandType";
 import CardInfo from "../card/CardInfo";
 import { BasicStrategyAction } from "./BasicStrategyAction";
 import { Rank } from "../card/Rank";
-import {Simulate} from "react-dom/test-utils";
-import play = Simulate.play;
+import { PlayerHandInfo } from "../card/PlayerHandInfo";
 
 export default class BasicStrategy {
-  static get(player: HandInfo, dealer: CardInfo): BasicStrategyAction {
+  static get(player: PlayerHandInfo, dealer: CardInfo): BasicStrategyAction {
     // Split
-
+    if (player.canSplit()) {
+      if (
+        player.cards[0].rank === Rank.ACE ||
+        player.cards[0].rank === Rank.EIGHT
+      ) {
+        return BasicStrategyAction.SPLIT;
+      } else if (
+        player.cards[0].rank === Rank.TWO ||
+        player.cards[0].rank === Rank.THREE ||
+        player.cards[0].rank === Rank.SIX
+      ) {
+        switch (dealer.rank) {
+          case Rank.TWO:
+          case Rank.THREE:
+          case Rank.FOUR:
+          case Rank.FIVE:
+          case Rank.SIX:
+          case Rank.SEVEN:
+            return BasicStrategyAction.SPLIT;
+        }
+      } else if (player.cards[0].rank === Rank.SEVEN) {
+        switch (dealer.rank) {
+          case Rank.TWO:
+          case Rank.THREE:
+          case Rank.FOUR:
+          case Rank.FIVE:
+          case Rank.SIX:
+          case Rank.SEVEN:
+          case Rank.EIGHT:
+            return BasicStrategyAction.SPLIT;
+        }
+      } else if (player.cards[0].rank === Rank.NINE) {
+        switch (dealer.rank) {
+          case Rank.TWO:
+          case Rank.THREE:
+          case Rank.FOUR:
+          case Rank.FIVE:
+          case Rank.SIX:
+          case Rank.EIGHT:
+          case Rank.NINE:
+            return BasicStrategyAction.SPLIT;
+        }
+      } else if (player.cards[0].rank === Rank.FOUR) {
+        if (dealer.rank === Rank.FIVE) {
+          return BasicStrategyAction.SPLIT;
+        }
+      }
+    }
 
     // Double
     if (player.cards.length === 2) {
@@ -68,7 +113,12 @@ export default class BasicStrategy {
             case Rank.SIX:
               return BasicStrategyAction.DOUBLE;
           }
-        } else if (player.value === 16 || player.value === 15 || player.value === 14 || player.value === 13) {
+        } else if (
+          player.value === 16 ||
+          player.value === 15 ||
+          player.value === 14 ||
+          player.value === 13
+        ) {
           switch (dealer.rank) {
             case Rank.FOUR:
             case Rank.FIVE:
