@@ -7,4 +7,5 @@ export default interface BoardInfo {
   shoe: ShoeInfo;
   dealerHand: DealerHandInfo;
   playerHands: PlayerHandInfo[];
+  hasPlayerStand: boolean[];
 }

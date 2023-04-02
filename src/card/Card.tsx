@@ -9,7 +9,7 @@ export default function Card({ cardInfo }: { cardInfo: CardInfo }) {
 
   return (
     <React.Fragment>
-      <img style={{ height: "200px" }} src={imgUrl} />
+      <img height="100%" src={imgUrl} />
     </React.Fragment>
   );
 }

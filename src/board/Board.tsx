@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Dealer from "../game/Dealer";
 import BoardInfo from "../game/BoardInfo";
 import Player from "../game/Player";
-import { Box, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { Suit } from "../card/Suit";
 import { Rank } from "../card/Rank";
 import BasicStrategy from "../strategy/BasicStrategy";
@@ -19,6 +19,7 @@ export default function Board() {
     shoe: new ShoeInfo([]),
     dealerHand: new DealerHandInfo([]),
     playerHands: [] as PlayerHandInfo[],
+    hasPlayerStand: [] as boolean[],
   });
   const [wrongCount, setWrongCount] = useState<number>(0);
   const [messageText, setMessageText] = useState<string>("");
@@ -64,6 +65,15 @@ export default function Board() {
       return;
     }
     setMessageText("Correct!");
+    setBoardInfo((prevState) => {
+      prevState.dealerHand.showHidden();
+      prevState.dealerHand.drawTo17(prevState.shoe);
+      return {
+        ...prevState,
+        shoe: prevState.shoe,
+        dealerHand: prevState.dealerHand,
+      };
+    });
   }
 
   function playerDouble(id: number) {
@@ -124,7 +134,7 @@ export default function Board() {
 
   function resetBoard() {
     const cards = initDecks(1);
-    const playerNumOfHands = 2;
+    const playerNumOfHands = 1;
 
     let dealerHandInfo = new DealerHandInfo([
       ...cards.slice(
@@ -134,12 +144,15 @@ export default function Board() {
     ]);
 
     const playerHands = [] as PlayerHandInfo[];
+    const hasPlayerStand = [] as boolean[];
     for (let i = 0; i < playerNumOfHands; i++) {
       playerHands.push(
         new PlayerHandInfo([
           ...cards.slice(cards.length - 2 - i * 2, cards.length - i * 2),
         ])
       );
+
+      hasPlayerStand.push(false);
     }
 
     setBoardInfo({
@@ -149,6 +162,7 @@ export default function Board() {
       ]),
       dealerHand: dealerHandInfo,
       playerHands: playerHands,
+      hasPlayerStand: hasPlayerStand,
     });
 
     setMessageText("");
@@ -157,22 +171,23 @@ export default function Board() {
   return (
     <Box>
       <Dealer hand={boardInfo.dealerHand} dealerDraw={dealerDraw} />
-      {boardInfo.playerHands.map((hand, index) => (
-        <Player
-          key={index}
-          hand={hand}
-          playerId={index}
-          playerDraw={playerDraw}
-          playerStand={playerStand}
-          playerDouble={playerDouble}
-          playerSplit={playerSplit}
-          resetBoard={resetBoard}
-        />
-      ))}
-
-      <Typography variant="h6">{messageText}</Typography>
-      <Typography variant="h6">{wrongCount}</Typography>
-      <Score />
+      <Grid container sx={{ display: "inline-flex" }}>
+        <Grid sx={{ flexGrow: 1 }}></Grid>
+        {boardInfo.playerHands.map((hand, index) => (
+          <Player
+            key={index}
+            hand={hand}
+            playerId={index}
+            playerDraw={playerDraw}
+            playerStand={playerStand}
+            playerDouble={playerDouble}
+            playerSplit={playerSplit}
+            resetBoard={resetBoard}
+          />
+        ))}
+        <Grid sx={{ flexGrow: 1 }}></Grid>
+      </Grid>
+      <Score messageText={messageText} wrongCount={wrongCount} />
     </Box>
   );
 }

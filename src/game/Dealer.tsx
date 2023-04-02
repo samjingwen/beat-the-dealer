@@ -13,14 +13,16 @@ export default function Dealer({
   return (
     <Box
       component="div"
-      sx={{ p: 2, border: "1px dashed grey", width: "600px", margin: "auto" }}
+      sx={{
+        p: 2,
+        border: "1px dashed grey",
+        width: "300px",
+        height: "200px",
+        margin: "auto",
+      }}
     >
       <Grid container sx={{ width: "100%" }}>
-        <Grid
-          item
-          xs={12}
-          sx={{ height: "200px" }}
-        >
+        <Grid item xs={12}>
           <CardList cards={hand.cards} />
         </Grid>
       </Grid>
